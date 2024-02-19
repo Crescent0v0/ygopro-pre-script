@@ -93,17 +93,18 @@ function s.auop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 end
-function s.thfilter(c,tp)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsPreviousControler(tp)
+function s.thfilter(c,tp,eg)
+	return eg:IsContains(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsPreviousControler(tp)
 		and c:IsPreviousLocation(LOCATION_HAND) and c:IsReason(REASON_DISCARD)
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:FilterCount(s.thfilter,nil,tp)>0
+	return eg:FilterCount(s.thfilter,nil,tp,eg)>0
 end
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(s.thfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return s.thfilter(chkc,tp,eg) end
+	if chk==0 then return Duel.IsExistingTarget(s.thfilter,tp,LOCATION_GRAVE,0,1,nil,tp,eg) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+	local g=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp,eg)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
